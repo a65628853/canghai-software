@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#3B82F6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2563EB;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <g transform="translate(100, 50)">
+    <!-- 数据面板 -->
+    <rect x="50" y="100" width="500" height="300" rx="20" fill="white" stroke="url(#grad1)" stroke-width="2"/>
+    <!-- 图表 -->
+    <path d="M100,350 L100,150 L200,250 L300,200 L400,300 L500,180" fill="none" stroke="url(#grad1)" stroke-width="3"/>
+    <!-- 数据点 -->
+    <circle cx="100" cy="150" r="6" fill="url(#grad1)"/>
+    <circle cx="200" cy="250" r="6" fill="url(#grad1)"/>
+    <circle cx="300" cy="200" r="6" fill="url(#grad1)"/>
+    <circle cx="400" cy="300" r="6" fill="url(#grad1)"/>
+    <circle cx="500" cy="180" r="6" fill="url(#grad1)"/>
+    <!-- 装饰图形 -->
+    <rect x="100" y="420" width="80" height="30" rx="5" fill="#E5E7EB"/>
+    <rect x="200" y="420" width="80" height="30" rx="5" fill="#E5E7EB"/>
+    <rect x="300" y="420" width="80" height="30" rx="5" fill="#E5E7EB"/>
+  </g>
+</svg> 
