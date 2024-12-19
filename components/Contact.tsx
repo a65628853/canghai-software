@@ -64,7 +64,7 @@ export default function Contact() {
     e.preventDefault()
     
     try {
-      const response = await fetch('https://your-worker-name.your-account.workers.dev', {
+      const response = await fetch('/api/contact', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
