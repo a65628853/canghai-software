@@ -80,8 +80,12 @@ export default function Contact() {
       } else {
         throw new Error(result.error || '提交失败，请稍后重试')
       }
-    } catch (error) {
-      alert(error.message)
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        alert(error.message)
+      } else {
+        alert('提交失败，请稍后重试')
+      }
     }
   }
 
