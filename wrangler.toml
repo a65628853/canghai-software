@@ -1,16 +1,14 @@
-name = "changhai-software"
+name = "canghai-software"
+main = "contact-form-worker.js"
 compatibility_date = "2024-01-01"
 
-[build]
-command = "npm run build"
-output_directory = "out"
-
-[build.environment]
-NODE_VERSION = "20"
-
-[site]
-bucket = "./out"
-entry-point = "."
-
+# 允许的域名
 [env.production]
-name = "changhai-software" 
+routes = [
+  { pattern = "your-domain.com/*", zone_name = "your-domain.com" }
+] 
+
+[[d1_databases]]
+binding = "DB"
+database_name = "canghai-software"
+database_id = "1fddbb62-634d-47cf-90f4-a63342ad8d39"

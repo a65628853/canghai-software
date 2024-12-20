@@ -69,10 +69,10 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* 解决方案 */}
+          {/* 产品服务 */}
           <div>
             <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">
-              解决方案
+              产品服务
             </h3>
             <ul className="space-y-3">
               {navigation.solutions.map((item) => (

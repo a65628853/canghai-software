@@ -50,7 +50,7 @@ export default function Navbar() {
               首页
             </Link>
             <Link href="/services" className={`${isActive('/services')} py-2`}>
-              解决方案
+              产品服务
             </Link>
             <Link href="/about" className={`${isActive('/about')} py-2`}>
               关于我们
@@ -118,7 +118,7 @@ export default function Navbar() {
                 : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
             }`}
           >
-            解决方案
+            产品服务
           </Link>
           <Link
             href="/about"
