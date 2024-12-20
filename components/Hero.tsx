@@ -24,36 +24,32 @@ export default function Hero() {
               transition={{ duration: 0.5 }}
               className="space-y-8"
             >
-              <h1 className="text-6xl tracking-tight font-extrabold text-white sm:text-7xl md:text-8xl">
-                <span className="block">沧海软件</span>
+              <h1 className="text-5xl tracking-tight font-extrabold text-white sm:text-6xl md:text-7xl">
+                <span className="block">智造数字未来</span>
+                <span className="block text-blue-200 mt-2">创新科技价值</span>
               </h1>
-              <p className="max-w-3xl mx-auto text-xl text-blue-100">
-                深耕软件开发十余载，以技术创新为企业赋能
+              <p className="max-w-3xl mx-auto text-lg sm:text-xl md:text-2xl text-blue-100">
+                深耕企业数字化建设，打造行业领先解决方案
               </p>
-              <p className="max-w-2xl mx-auto text-lg text-blue-200">
-                专注于软件定制开发、系统集成、技术咨询等专业服务
+              <p className="max-w-2xl mx-auto text-base sm:text-lg text-blue-200">
+                十年技术积淀，为企业提供全方位的软件开发与数字化转型服务
               </p>
-            </motion.div>
-
-            <motion.div
-              className="mt-12"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-            >
-              <div className="flex flex-col sm:flex-row justify-center gap-4">
-                <Link
-                  href="/contact"
-                  className="flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-blue-700 bg-white hover:bg-blue-50 md:py-4 md:text-lg md:px-10 transition-all duration-300"
+              <div className="mt-8">
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.8 }}
                 >
-                  立即咨询
-                </Link>
-                <Link
-                  href="/services"
-                  className="flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-500 bg-opacity-30 hover:bg-opacity-40 md:py-4 md:text-lg md:px-10 transition-all duration-300"
-                >
-                  了解更多
-                </Link>
+                  <Link
+                    href="/contact"
+                    className="inline-flex items-center px-6 py-3 sm:px-8 sm:py-4 border border-transparent text-base sm:text-lg font-medium rounded-md text-blue-700 bg-white hover:bg-blue-50 transition-colors duration-300"
+                  >
+                    咨询解决方案
+                    <svg className="ml-2 -mr-1 w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </Link>
+                </motion.div>
               </div>
             </motion.div>
           </div>

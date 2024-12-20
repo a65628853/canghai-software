@@ -1,7 +1,7 @@
 import Hero from '@/components/Hero'
 import Stats from '@/components/Stats'
 import Advantages from '@/components/Advantages'
-import News from '@/components/News'
+import Cases from '@/components/Cases'
 import CTA from '@/components/CTA'
 
 export default function Home() {
@@ -10,7 +10,7 @@ export default function Home() {
       <Hero />
       <Stats />
       <Advantages />
-      <News />
+      <Cases />
       <CTA />
     </main>
   )
