@@ -37,13 +37,13 @@ export default function Footer() {
               <div className="relative w-10 h-10 overflow-hidden rounded-lg bg-white bg-opacity-10 p-1">
                 <Image
                   src="/logo.svg"
-                  alt="沧海软件"
+                  alt="海睿科技"
                   width={32}
                   height={32}
                   className="w-full h-full object-contain"
                 />
               </div>
-              <span className="text-2xl font-bold text-white">沧海软件</span>
+              <span className="text-2xl font-bold text-white">海睿科技</span>
             </Link>
             <p className="text-gray-400">
               专业的软件开发服务商，为企业提供全方位的技术解决方案
@@ -135,7 +135,7 @@ export default function Footer() {
           <div className="px-6 py-6">
             <div className="flex flex-col md:flex-row justify-between items-center">
               <p className="text-gray-400">
-                © {new Date().getFullYear()} 沧海软件. All rights reserved.
+                © {new Date().getFullYear()} 海睿科技. All rights reserved.
               </p>
               <div className="flex items-center space-x-6 mt-4 md:mt-0">
                 <Link href="/terms" className="text-gray-400 hover:text-white transition-colors">

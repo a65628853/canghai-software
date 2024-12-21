@@ -35,12 +35,12 @@ export default function Navbar() {
             <Link href="/" className="flex items-center space-x-2">
               <Image
                 src="/logo.svg"
-                alt="沧海软件"
+                alt="海睿科技"
                 width={32}
                 height={32}
                 className="w-8 h-8"
               />
-              <span className="text-2xl font-bold text-blue-600">沧海软件</span>
+              <span className="text-2xl font-bold text-blue-600">海睿科技</span>
             </Link>
           </div>
           

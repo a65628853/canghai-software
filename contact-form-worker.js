@@ -1,27 +1,21 @@
 export default {
   async fetch(request, env) {
-    // CORS headers
+    // 允许所有域名的 CORS 配置
     const corsHeaders = {
-      'Access-Control-Allow-Origin': 'https://canghai-software.pages.dev',
+      'Access-Control-Allow-Origin': '*',  // 允许所有域名
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Access-Control-Max-Age': '86400',
       'Content-Type': 'application/json'
     }
 
     // 处理 CORS 预检请求
     if (request.method === 'OPTIONS') {
-      return new Response(null, {
-        headers: {
-          ...corsHeaders,
-          'Access-Control-Allow-Methods': 'POST, OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type',
-          'Access-Control-Max-Age': '86400',
-        }
-      })
+      return new Response(null, { headers: corsHeaders })
     }
 
-    // 处理实际的 POST 请求
-    if (request.method !== 'POST') {
-      return new Response('Method not allowed', { status: 405 })
-    }
+    const url = new URL(request.url)
+    const path = url.pathname
 
     try {
       // 验证数据库是否正确绑定
@@ -29,43 +23,168 @@ export default {
         throw new Error('Database not configured')
       }
 
-      const data = await request.json()
-      
-      // 基本验证
-      if (!data.name || !data.email || !data.message) {
-        throw new Error('Missing required fields')
+      // 验证 token 的函数
+      const validateToken = async (request) => {
+        const authHeader = request.headers.get('Authorization')
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+          return false
+        }
+        const token = authHeader.split(' ')[1]
+        // 从 KV 中获取 token
+        const storedToken = await env.ADMIN_TOKENS.get(token)
+        return storedToken !== null
       }
 
-      // 插入数据到 D1 数据库
-      const stmt = env.DB.prepare(`
-        INSERT INTO contacts (name, email, phone, company, message)
-        VALUES (?, ?, ?, ?, ?)
-      `)
-
-      await stmt.bind(
-        data.name,
-        data.email,
-        data.phone || null,
-        data.company || null,
-        data.message
-      ).run()
-
-      return new Response(
-        JSON.stringify({ 
-          success: true,
-          message: '表单提交成功'
-        }), 
-        { 
-          headers: corsHeaders,
-          status: 200
+      // 获取所有联系记录
+      if (path === '/api/contacts' && request.method === 'GET') {
+        if (!await validateToken(request)) {
+          return new Response(
+            JSON.stringify({ success: false, error: '未授权' }), 
+            { headers: corsHeaders, status: 401 }
+          )
         }
-      )
+
+        // 获取分页参数
+        const params = new URL(request.url).searchParams
+        const page = parseInt(params.get('page') || '1')
+        const pageSize = parseInt(params.get('pageSize') || '10')
+        const offset = (page - 1) * pageSize
+
+        try {
+          // 获取总记录数
+          const { total } = await env.DB
+            .prepare('SELECT COUNT(*) as total FROM contacts')
+            .first()
+
+          // 获取分页数据
+          const { results } = await env.DB
+            .prepare(`
+              SELECT * FROM contacts 
+              ORDER BY created_at DESC 
+              LIMIT ? OFFSET ?
+            `)
+            .bind(pageSize, offset)
+            .all()
+          
+          // 确保返回正确的分页信息
+          return new Response(
+            JSON.stringify({ 
+              success: true, 
+              contacts: results,
+              pagination: {
+                total: Number(total),  // 确保是数字类型
+                page,
+                pageSize,
+                totalPages: Math.ceil(Number(total) / pageSize)
+              }
+            }), 
+            { headers: corsHeaders }
+          )
+        } catch (error) {
+          console.error('Database error:', error)
+          return new Response(
+            JSON.stringify({ 
+              success: false, 
+              error: 'Database error',
+              details: error.message 
+            }), 
+            { 
+              headers: corsHeaders,
+              status: 500
+            }
+          )
+        }
+      }
+
+      // 删除指定记录
+      if (path.match(/^\/api\/contacts\/\d+$/) && request.method === 'DELETE') {
+        if (!await validateToken(request)) {
+          return new Response(
+            JSON.stringify({ success: false, error: '未授权' }), 
+            { headers: corsHeaders, status: 401 }
+          )
+        }
+
+        const id = path.split('/').pop()
+        await env.DB
+          .prepare('DELETE FROM contacts WHERE id = ?')
+          .bind(id)
+          .run()
+        
+        return new Response(
+          JSON.stringify({ success: true }), 
+          { headers: corsHeaders }
+        )
+      }
+
+      // 提交新的联系表单
+      if (path === '/api/contact' && request.method === 'POST') {
+        const data = await request.json()
+        
+        if (!data.name || !data.email || !data.message) {
+          throw new Error('Missing required fields')
+        }
+
+        const stmt = env.DB.prepare(`
+          INSERT INTO contacts (name, email, phone, company, message)
+          VALUES (?, ?, ?, ?, ?)
+        `)
+
+        await stmt.bind(
+          data.name,
+          data.email,
+          data.phone || null,
+          data.company || null,
+          data.message
+        ).run()
+
+        return new Response(
+          JSON.stringify({ success: true, message: '表单提交成功' }), 
+          { headers: corsHeaders }
+        )
+      }
+
+      // 登录处理
+      if (path === '/api/admin/login' && request.method === 'POST') {
+        const { password } = await request.json()
+        
+        if (password === env.ADMIN_PASSWORD) {
+          // 生成 token
+          const token = crypto.randomUUID()
+          
+          // 存储 token 到 KV，设置 24 小时过期
+          await env.ADMIN_TOKENS.put(token, 'valid', {
+            expirationTtl: 86400 // 24小时
+          })
+          
+          return new Response(
+            JSON.stringify({ 
+              success: true, 
+              token 
+            }), 
+            { headers: corsHeaders }
+          )
+        }
+        
+        return new Response(
+          JSON.stringify({ 
+            success: false, 
+            error: '密码错误' 
+          }), 
+          { 
+            headers: corsHeaders,
+            status: 401 
+          }
+        )
+      }
+
+      return new Response('Not Found', { status: 404, headers: corsHeaders })
     } catch (error) {
       console.error('Error:', error)
       return new Response(
         JSON.stringify({ 
           success: false, 
-          error: error.message || '提交失败，请稍后重试',
+          error: error.message || '操作失败，请稍后重试',
           details: env.DB ? 'DB is bound' : 'DB is not bound'
         }), 
         { 

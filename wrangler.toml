@@ -2,6 +2,13 @@ name = "canghai-software"
 main = "contact-form-worker.js"
 compatibility_date = "2024-01-01"
 
+[vars]
+ADMIN_PASSWORD = "admin123"
+
+[[kv_namespaces]]
+binding = "ADMIN_TOKENS"
+id = "899f9d39a0704dda8e29101add4fe5a6"
+
 # 允许的域名
 [env.production]
 routes = [
