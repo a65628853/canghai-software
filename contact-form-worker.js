@@ -178,6 +178,110 @@ export default {
         )
       }
 
+      // 获取所有设置
+      if (path === '/api/settings' && request.method === 'GET') {
+        if (!await validateToken(request)) {
+          return new Response(
+            JSON.stringify({ success: false, error: '未授权' }), 
+            { headers: corsHeaders, status: 401 }
+          )
+        }
+
+        const { results } = await env.DB
+          .prepare('SELECT * FROM settings ORDER BY id ASC')
+          .all()
+        
+        return new Response(
+          JSON.stringify({ success: true, settings: results }), 
+          { headers: corsHeaders }
+        )
+      }
+
+      // 更新设置
+      if (path === '/api/settings' && request.method === 'PUT') {
+        if (!await validateToken(request)) {
+          return new Response(
+            JSON.stringify({ success: false, error: '未授权' }), 
+            { headers: corsHeaders, status: 401 }
+          )
+        }
+
+        const data = await request.json()
+        const settings = data.settings
+
+        try {
+          for (const setting of settings) {
+            await env.DB
+              .prepare('UPDATE settings SET value = ?, updated_at = CURRENT_TIMESTAMP WHERE key = ?')
+              .bind(setting.value, setting.key)
+              .run()
+          }
+
+          return new Response(
+            JSON.stringify({ success: true }), 
+            { headers: corsHeaders }
+          )
+        } catch (error) {
+          return new Response(
+            JSON.stringify({ success: false, error: '更新失败' }), 
+            { headers: corsHeaders, status: 500 }
+          )
+        }
+      }
+
+      // 获取统计数据
+      if (path === '/api/stats' && request.method === 'GET') {
+        if (!await validateToken(request)) {
+          return new Response(
+            JSON.stringify({ success: false, error: '未授权' }), 
+            { headers: corsHeaders, status: 401 }
+          )
+        }
+
+        try {
+          // 获取总联系表单数
+          const { total } = await env.DB
+            .prepare('SELECT COUNT(*) as total FROM contacts')
+            .first()
+
+          // 获取今日新增数（使用 SQLite 的日期函数）
+          const { today } = await env.DB
+            .prepare(`
+              SELECT COUNT(*) as today 
+              FROM contacts 
+              WHERE date(created_at) = date('now')
+            `)
+            .first()
+
+          // 获取设置项数量
+          const { settings } = await env.DB
+            .prepare('SELECT COUNT(*) as settings FROM settings')
+            .first()
+
+          return new Response(
+            JSON.stringify({ 
+              success: true, 
+              stats: {
+                totalContacts: Number(total || 0),
+                todayContacts: Number(today || 0),
+                settings: Number(settings || 0)
+              }
+            }), 
+            { headers: corsHeaders }
+          )
+        } catch (error) {
+          console.error('Database error:', error)
+          return new Response(
+            JSON.stringify({ 
+              success: false, 
+              error: 'Database error',
+              details: error.message 
+            }), 
+            { headers: corsHeaders, status: 500 }
+          )
+        }
+      }
+
       return new Response('Not Found', { status: 404, headers: corsHeaders })
     } catch (error) {
       console.error('Error:', error)

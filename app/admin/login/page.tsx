@@ -1,19 +1,15 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
+import Image from 'next/image'
 
 export default function LoginPage() {
+  const router = useRouter()
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
-  const router = useRouter()
 
-  useEffect(() => {
-    const token = localStorage.getItem('admin-token')
-    if (token) {
-      router.replace('/admin')
-    }
-  }, [])
+  console.log('Rendering login page')
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -23,23 +19,22 @@ export default function LoginPage() {
       const response = await fetch('https://canghai-software.a65628853.workers.dev/api/admin/login', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ password }),
+        body: JSON.stringify({ password })
       })
 
       const data = await response.json()
 
       if (data.success) {
-        // 保存 token 到 localStorage
         localStorage.setItem('admin-token', data.token)
         toast.success('登录成功')
-        router.push('/admin')
+        router.replace('/admin')
       } else {
-        throw new Error(data.error || '登录失败')
+        throw new Error(data.error)
       }
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : '登录失败')
+      toast.error('登录失败')
     } finally {
       setLoading(false)
     }
@@ -48,17 +43,25 @@ export default function LoginPage() {
   return (
     <main className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+        <div className="text-center">
+          <Image
+            src="/logo.svg"
+            alt="Logo"
+            width={48}
+            height={48}
+            className="mx-auto"
+          />
+          <h2 className="mt-6 text-3xl font-bold text-gray-900">
             管理后台登录
           </h2>
         </div>
+
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="rounded-md shadow-sm -space-y-px">
-            <div>
-              <label htmlFor="password" className="sr-only">
-                密码
-              </label>
+          <div>
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              管理密码
+            </label>
+            <div className="mt-1">
               <input
                 id="password"
                 name="password"
@@ -66,7 +69,7 @@ export default function LoginPage() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 placeholder="请输入管理密码"
               />
             </div>
@@ -76,7 +79,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${
+              className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200 ${
                 loading ? 'opacity-75 cursor-not-allowed' : ''
               }`}
             >
