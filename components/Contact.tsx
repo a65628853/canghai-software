@@ -1,6 +1,7 @@
 'use client'
 import { motion } from 'framer-motion'
 import { useState } from 'react'
+import toast from 'react-hot-toast'
 
 // 修改输入框样式类
 const inputClasses = `
@@ -84,7 +85,17 @@ export default function Contact() {
       if (result.success) {
         setStatus({ loading: false, success: true, error: '' })
         setFormData({ name: '', email: '', phone: '', company: '', message: '' })
-        alert('感谢您的留言，我们会尽快与您联系！')
+        toast.success('感谢您的留言，我们会尽快与您联系！', {
+          duration: 3000,
+          position: 'top-center',
+          style: {
+            background: '#4CAF50',
+            color: '#fff',
+            padding: '16px',
+            borderRadius: '8px',
+          },
+          icon: '👋',
+        })
       } else {
         throw new Error(result.error || '提交失败，请稍后重试')
       }
@@ -94,7 +105,17 @@ export default function Contact() {
         success: false, 
         error: error instanceof Error ? error.message : '提交失败，请稍后重试'
       })
-      alert(status.error)
+      toast.error(error instanceof Error ? error.message : '提交失败，请稍后重试', {
+        duration: 3000,
+        position: 'top-center',
+        style: {
+          background: '#f44336',
+          color: '#fff',
+          padding: '16px',
+          borderRadius: '8px',
+        },
+        icon: '❌',
+      })
     }
   }
 
